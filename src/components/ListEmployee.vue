@@ -1,27 +1,28 @@
 <template>
     <div>
+        <h1>Employee details</h1>
         <div class="add-btn">
             <el-button @click="showAddEmployee" type="success">Add</el-button>
         </div>
         <button @click="showSample">Sample</button>
-        <div v-if="!errText">
-            <table v-if="!isLoading" height="350" style="width: 100%">
+        <div class="table" v-infinite-scroll="load" v-if="!errText">
+            <table v-if="!isLoading">
                 <thead>
                     <tr>
                         <th style="width: 50px;">Id</th>
                         <th style="width: 180px;">Email</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Edit/Delete</th>
+                        <th style="width: 100px;">First Name</th>
+                        <th style="width: 100px;">Last Name</th>
+                        <th style="width: 80px;">Edit/Delete</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="data in empData" :key="data.id">
                         <td  style="width: 50px;">{{ data.id }}</td>
                         <td  style="width: 180px;">{{ data.email }}</td>
-                        <td>{{ data.first_name }}</td>
-                        <td>{{ data.last_name }}</td>
-                        <td>
+                        <td style="width: 100px;">{{ data.first_name }}</td>
+                        <td style="width: 100px;">{{ data.last_name }}</td>
+                        <td style="width: 80px;">
                             <el-button type="primary" icon="el-icon-edit" @click="editEmployee(data.id)" circle></el-button>
                             <el-button type="danger" icon="el-icon-delete" @click="deleteEmployee(data.id)" circle></el-button>
                         </td>
@@ -53,12 +54,15 @@ import index from './mixins/index';
                 createEmployee: false,
                 success_msg: "",
                 warning_msg: "",
+                page: 1,
+                totalPages: null
             }
         },
         methods: {
             async getEmployeeData(){
                 this.isLoading = true;
-                let response = await this.getEmpData();
+                let response = await this.getEmpData(this.page);
+                this.totalPages = response.total_pages;
                 this.empData = response.data;
                 this.isLoading = false;
             },
@@ -93,6 +97,15 @@ import index from './mixins/index';
                         id: 'asadasasasasas'
                     },
                 })
+            },
+            async load() {
+                if(this.page < this.totalPages) {
+                    let response = await this.getEmpData(this.page+1);
+                    response.data.forEach(data => {
+                        this.empData.push(data);
+                    });
+                    this.page++;
+                }
             }
         },
         async mounted(){
@@ -106,8 +119,34 @@ import index from './mixins/index';
     text-align: right;
     padding: 20px;
 }
+.table {
+    height: 250px;
+    overflow: auto;
+}
+
+.table table {
+    position: relative;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table tr th {
+    position: sticky;
+    top: 0;
+    background-color: #f1f1f1;
+    padding: 8px 2px;
+}
 table tr td,
 table tr th {
     text-align: left;
+}
+
+table tr td {
+    padding: 5px 0;
+}
+@media screen and (max-width: 600px) {
+    .table table {
+        width: 600px;
+    }
 }
 </style>

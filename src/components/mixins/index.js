@@ -1,13 +1,13 @@
 /* eslint-disable no-async-promise-executor */
 export default {
     methods: {
-        async getEmpData() {
+        async getEmpData(params) {
             return new Promise( async (resolve, reject) => {
-                let response = await this.$http.get('https://reqres.in/api/users');
+                let response = await this.$http.get(`https://reqres.in/api/users?page=${params}`);
                 if (response.status === 200) {
                     resolve(response.data);
                 } else {
-                    reject(response.reason);
+                    reject(response);
                 }
             });
         },
