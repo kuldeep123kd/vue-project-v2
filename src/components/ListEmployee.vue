@@ -1,38 +1,57 @@
 <template>
     <div>
+        <div class="add-btn">
+            <el-button @click="showAddEmployee" type="success">Add</el-button>
+        </div>
         <div v-if="!errText">
-            <el-table :data="empData" height="350" style="width: 100%" v-if="!isLoading">
-                <el-table-column prop="id" label="Id" >
-                </el-table-column>
-                <el-table-column prop="name" label="Name" >
-                </el-table-column>
-                <el-table-column prop="username" label="Username" width="180">
-                </el-table-column>
-                <el-table-column prop="email" label="Email" width="180">
-                </el-table-column>
-                <el-table-column prop="phone" label="Phone" width="180">
-                </el-table-column>
-                <el-table-column prop="website" label="Website">
-                </el-table-column>
-                <el-table-column prop="address.city" label="Address">
-                </el-table-column>
-            </el-table>
+            <table v-if="!isLoading" height="350" style="width: 100%">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">Id</th>
+                        <th style="width: 180px;">Email</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Edit/Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="data in empData" :key="data.id">
+                        <td  style="width: 50px;">{{ data.id }}</td>
+                        <td  style="width: 180px;">{{ data.email }}</td>
+                        <td>{{ data.first_name }}</td>
+                        <td>{{ data.last_name }}</td>
+                        <td>
+                            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+                            <el-button type="danger" icon="el-icon-delete" @click="deleteEmpployee(data.id)" circle></el-button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <h1 v-else>Loading...</h1>
         </div>
-        <h2 v-else> {{ this.errText }} </h2>
+        <h2 v-else> {{ errText }} </h2>
+        <add-employee :modal_name="modal_name" v-if="createEmployee"></add-employee>
+        <sweet-modal ref="success_modal" icon="success">{{success_msg}}</sweet-modal>
+        <sweet-modal ref="warning_modal" icon="warning">{{warning_msg}}</sweet-modal>
     </div>
 </template>
 
 <script>
+import AddEmployee from './AddEmployee.vue';
+import { SweetModal } from 'sweet-modal-vue'
 import index from './mixins/index';
     export default {
+    components: { AddEmployee, SweetModal },
         mixins:[index],
         data() {
             return {
                 empData: [],
-                apiUrl: 'https://jsonplaceholder.typicode.com/users',
                 isLoading: false,
-                errText: null
+                errText: null,
+                modal_name: 'Add-employee',
+                createEmployee: false,
+                success_msg: "",
+                warning_msg: "",
             }
         },
         methods: {
@@ -56,13 +75,38 @@ import index from './mixins/index';
             async getEmployeeData(){
                 this.isLoading = true;
                 let response = await this.getEmpData();
-                // console.log(response);
-                this.empData = response;
+                this.empData = response.data;
                 this.isLoading = false;
             },
+            showAddEmployee() {
+                this.createEmployee = true;
+                setTimeout(() => {
+                    this.$modal.show(this.modal_name);
+                }, 500);
+            },
+            async deleteEmpployee(params) {
+                console.log(params);
+                await this.deleteFieldById(params);
+                // console.log(response);
+                // this.$refs.success_modal.open();
+                // setTimeout(() => {
+                //     this.$refs.success_modal.close();
+                // }, 3000);
+            }
         },
         async mounted(){
             this.getEmployeeData();
         }
     }
 </script>
+
+<style scoped>
+.add-btn {
+    text-align: right;
+    padding: 20px;
+}
+table tr td,
+table tr th {
+    text-align: left;
+}
+</style>
