@@ -7,6 +7,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import locale from "element-ui/lib/locale/lang/en";
 import vmodal from 'vue-js-modal'
 import VeeValidate from 'vee-validate';
+import router from "./router";
 
 Vue.config.productionTip = false
 
@@ -16,5 +17,10 @@ Vue.use(vmodal);
 Vue.use(VeeValidate);
 
 new Vue({
-  render: h => h(App),
-}).$mount('#app')
+  el: "#app",
+  router,
+  components: {
+    App
+  },
+  template: "<App/>",
+});

@@ -3,6 +3,7 @@
         <div class="add-btn">
             <el-button @click="showAddEmployee" type="success">Add</el-button>
         </div>
+        <button @click="showSample">Sample</button>
         <div v-if="!errText">
             <table v-if="!isLoading" height="350" style="width: 100%">
                 <thead>
@@ -21,8 +22,8 @@
                         <td>{{ data.first_name }}</td>
                         <td>{{ data.last_name }}</td>
                         <td>
-                            <el-button type="primary" icon="el-icon-edit" circle></el-button>
-                            <el-button type="danger" icon="el-icon-delete" @click="deleteEmpployee(data.id)" circle></el-button>
+                            <el-button type="primary" icon="el-icon-edit" @click="editEmployee(data.id)" circle></el-button>
+                            <el-button type="danger" icon="el-icon-delete" @click="deleteEmployee(data.id)" circle></el-button>
                         </td>
                     </tr>
                 </tbody>
@@ -48,30 +49,13 @@ import index from './mixins/index';
                 empData: [],
                 isLoading: false,
                 errText: null,
-                modal_name: 'Add-employee',
+                modal_name: 'add-employee',
                 createEmployee: false,
                 success_msg: "",
                 warning_msg: "",
             }
         },
         methods: {
-            // async getEmployeeData() {
-            //     this.isLoading = true;
-            //     let response = await this.$http.get(this.apiUrl);
-            //     if(response.status === 200) {
-            //         this.isLoading = false;
-            //         this.empData = response.data;
-            //     } else if(response.status === 400 || response.status === 401) {
-            //         this.isLoading = false;
-            //         this.errText = "Somthing not right, Please reload your page"
-            //     }
-            //     await this.axios.get(this.apiUrl).then((response) => {
-            //         console.log(response);
-            //     }).catch((err)=> {
-            //         console.log(err);
-            //         console.log(err.response);
-            //     });
-            // }
             async getEmployeeData(){
                 this.isLoading = true;
                 let response = await this.getEmpData();
@@ -84,14 +68,31 @@ import index from './mixins/index';
                     this.$modal.show(this.modal_name);
                 }, 500);
             },
-            async deleteEmpployee(params) {
+            async deleteEmployee(params) {
                 console.log(params);
-                await this.deleteFieldById(params);
-                // console.log(response);
-                // this.$refs.success_modal.open();
-                // setTimeout(() => {
-                //     this.$refs.success_modal.close();
-                // }, 3000);
+                let response = await this.deleteFieldById(params);
+                console.log(response);
+            },
+            async editEmployee(id) {
+                try{
+                    let params = {
+                        name: "Stark",
+                        job: "SWE!"
+                    };
+                    let response = await this.editEmpDataById(id, params);
+                    console.log(response);
+                }
+                catch (error) {
+                    console.log(error);
+                }
+            },
+            showSample() {
+                this.$router.push({
+                    name: 'Sample',
+                    params: {
+                        id: 'asadasasasasas'
+                    },
+                })
             }
         },
         async mounted(){

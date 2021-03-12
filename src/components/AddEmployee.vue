@@ -17,30 +17,9 @@
                         <span v-show="errors.has('job')">{{ errors.first('job')}}</span>
                     </div>
                 </div>
-                <!-- <div class="input-field">
-                    <label>Phone</label>
-                    <input type="tel" v-model="phone" v-validate.persist="'required|numeric'" name="phone" placeholder="Enter phone" />
-                    <div>
-                        <span v-show="errors.has('phone')">{{ errors.first('phone')}}</span>
-                    </div>
-                </div>
-                <div class="input-field">
-                    <label>Age</label>
-                    <input type="text" v-model="age" v-validate.persist="'required|numeric'" name="age" placeholder="Enter age" />
-                    <div>
-                        <span v-show="errors.has('age')">{{ errors.first('age')}}</span>
-                    </div>
-                </div>
-                <div class="input-field">
-                    <label>Salary</label>
-                    <input type="text" v-model="salary" v-validate.persist="'required|numeric'" name="salary" placeholder="Enter salary" />
-                    <div>
-                        <span v-show="errors.has('salary')">{{ errors.first('salary')}}</span>
-                    </div>
-                </div> -->
                 <div class="save-btn">
-                    <el-button type="primary" plain @click="addData">Save</el-button>
-                    <el-button type="danger" plain @click="modelClose">Cancel</el-button>
+                    <el-button type="primary" plain @click="addEmployee">Save</el-button>
+                    <el-button type="danger" plain @click="modalClose">Cancel</el-button>
                 </div>
             </div>
         </modal>
@@ -62,55 +41,30 @@ export default {
         return {
             username: '',
             job: '',
-            // salary: '',
-            // phone: '',
-            // age: '',
             success_msg: "Employee Created Successfully",
             warning_msg: "Failed to Create Employee",
         }
     },
     computed: {
-        // new_employee() {
-        //     return {
-        //         name: this.username,
-        //         job: this.job
-        //     }
-        // }
+        new_employee() {
+            return {
+                name: this.username,
+                job: this.job
+            }
+        }
     },
     methods: {
-        async addData() {
+        async addEmployee() {
             this.$validator.validateAll().then(async result => {
-                if (result == true) {
-                    try{
-                        const params = {
-                            name: this.username,
-                            job: this.job
-                        }
-                        let response = await this.addEmpData(params);
-                        console.log(response);
-                    }
-                    catch(error){
-                        throw new Error(error);
-                    }
-                    // let response = await this.addEmpData(this.new_employee);
-                    // this.addEmpData(this.new_employee).then(() => {
-                    //     this.$refs.success_modal.open();
-                    //     setTimeout(() => {
-                    //         this.$refs.success_modal.close();
-                    //     }, 2000);
-                    //     setTimeout(() => {
-                    //         this.modelClose();
-                    //     }, 3000);
-                    // })
+                if (result === true) {
+                    let response = await this.addEmpData(this.new_employee);
+                    console.log(response);
                 }
             })
         },
-        modelClose() {
+        modalClose() {
             this.username = '';
             this.job = '';
-            // this.salary = '';
-            // this.phone = '';
-            // this.age = '';
             this.$modal.hide(this.modal_name);
         }
     },
@@ -123,23 +77,10 @@ export default {
                 job: {
                     required: () => "Job is Required",
                 },
-                // salary: {
-                //     required: () => "Salary is Required",
-                //     numeric: () => "Salary should be Numeric"
-                // },
-                // phone: {
-                //     required: () => "Phone Number is Required",
-                //     numeric: () => "Phone Number must contain more than 9 Numbers",
-                // },
-                // age:{
-                //     required: () => "Age is Required",
-                //     // regex: () => "Website must contain valid Domain Name"
-                // }
             }
         } 
         this.$validator.localize("en", dict);       
     },
-    // beforeDestroy() { this.$validator.pause() },
 }
 </script>
 
